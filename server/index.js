@@ -4,10 +4,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const dotenv = require("dotenv");
 
 // Initialize Express App
+dotenv.config();
 const app = express();
-const port = 5000;
+const port = process.env.localPort || 5000;
 
 // Middleware
 app.use(cors());
@@ -16,9 +18,9 @@ app.use(bodyParser.json());
 // Database Connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root', // Use your MySQL username
-  password: 'R0a0u0f0@', // Use your MySQL password
-  database: 'user_management'
+  user: process.env.user, // Use your MySQL username
+  password: process.env.password, // Use your MySQL password
+  database: process.env.database
 });
 
 db.connect((err) => {
@@ -27,7 +29,7 @@ db.connect((err) => {
 });
 
 // JWT Secret Key
-const JWT_SECRET = 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
