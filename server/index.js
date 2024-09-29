@@ -11,14 +11,8 @@ dotenv.config();
 const app = express();
 const port = process.env.localPort || 5000;
 
-// CORS Middleware Configuration
-
-app.use(cors({
-  origin: ["https://task4-frontend-sage.vercel.app"],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true 
-}));
+// Middleware
+app.use(cors());
 app.use(bodyParser.json());
 
 // Database Connection
