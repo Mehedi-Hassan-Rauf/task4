@@ -5,22 +5,34 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require("dotenv");
+const path = require("path");
 
 // Initialize Express App
 dotenv.config();
 const app = express();
-const port = process.env.localPort || 5000;
+const port = process.env.PORT || 5000;
+const dirname = path.resolve();
+
+app.use(express.static(path.join(dirname, "/frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(dirname, "frontend", "dist", "index.html"));
+});
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  },));
 app.use(bodyParser.json());
 
 // Database Connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: process.env.user, // Use your MySQL username
-  password: process.env.password, // Use your MySQL password
-  database: process.env.database
+  user: 'root', // Use your MySQL username
+  password: 'R0a0u0f0@', // Use your MySQL password
+  database: 'user_management'
 });
 
 db.connect((err) => {
@@ -29,7 +41,7 @@ db.connect((err) => {
 });
 
 // JWT Secret Key
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = 'my_secret_key';
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
