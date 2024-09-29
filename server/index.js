@@ -12,21 +12,12 @@ const app = express();
 const port = process.env.localPort || 5000;
 
 // CORS Middleware Configuration
-const allowedOrigins = ['https://task4-frontend-sage.vercel.app'];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: ["https://task4-frontend-sage.vercel.app"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // If you need to include credentials like cookies
+  credentials: true 
 }));
 app.use(bodyParser.json());
 
