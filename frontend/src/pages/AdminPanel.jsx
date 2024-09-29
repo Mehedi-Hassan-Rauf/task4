@@ -11,7 +11,7 @@ const AdminPanel = () => {
   }, []);
 
   const fetchUsers = () => {
-    axios.get(`${import.meta.env.VITE_SERVER}/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+    axios.get(`http://localhost:5000/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
       .then(res => setUsers(res.data))
       .catch(err => console.log(err));
   };
