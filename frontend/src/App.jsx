@@ -2,9 +2,9 @@ import { useState } from 'react'
 import './App.css'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import AdminPanel from './pages/adminPanel';
-import Login from './pages/login';
-import Register from './pages/register';
+import AdminPanel from './pages/AdminPanel';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
