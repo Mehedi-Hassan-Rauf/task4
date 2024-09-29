@@ -19,7 +19,7 @@ const Login = ({ togglePage }) => {
 
     try {
       // Make the API call to the backend
-      const response = await axios.post('http://localhost:5000/api/login', payload);
+      const response = await axios.post(`${import.meta.env.VITE_SERVER}/api/login`, payload);
 
       // response contains a token
       const { token } = response.data;
