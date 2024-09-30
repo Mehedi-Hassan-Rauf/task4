@@ -21,7 +21,7 @@ const Register = () => {
 
     try {
       // Make an API call to the backend for registration
-      const response = await axios.post('https://task4-server-rho.vercel.app/api/register', registrationData);
+      const response = await axios.post('https://task4-server-jxfl.onrender.com/api/register', registrationData);
 
       setSuccessMessage('Registration successful! You can now log in.');
       setErrorMessage(''); // Clear any previous error message

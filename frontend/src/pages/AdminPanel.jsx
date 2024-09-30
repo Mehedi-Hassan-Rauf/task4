@@ -11,7 +11,7 @@ const AdminPanel = () => {
   }, []);
 
   const fetchUsers = () => {
-    axios.get(`https://task4-server-rho.vercel.app/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+    axios.get(`https://task4-server-jxfl.onrender.com/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
       .then(res => {setUsers(res.data);console.log(res)})
       .catch(err => console.log(err));
   };
@@ -33,7 +33,7 @@ const AdminPanel = () => {
   };
 
   const blockUser = (userId) => {
-    axios.put(`https://task4-server-rho.vercel.app/api/block/${userId}`, {}, {
+    axios.put(`https://task4-server-jxfl.onrender.com/api/block/${userId}`, {}, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => fetchUsers())
@@ -41,7 +41,7 @@ const AdminPanel = () => {
   };
 
   const unblockUser = (userId) => {
-    axios.put(`https://task4-server-rho.vercel.app/api/unblock/${userId}`, {}, {
+    axios.put(`https://task4-server-jxfl.onrender.com/api/unblock/${userId}`, {}, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => fetchUsers())
@@ -49,7 +49,7 @@ const AdminPanel = () => {
   };
 
   const deleteUser = (userId) => {
-    axios.delete(`https://task4-server-rho.vercel.app/api/delete/${userId}`, {
+    axios.delete(`https://task4-server-jxfl.onrender.com/api/delete/${userId}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => fetchUsers())
