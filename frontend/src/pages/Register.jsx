@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Register = ({ togglePage }) => {
+const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +21,7 @@ const Register = ({ togglePage }) => {
 
     try {
       // Make an API call to the backend for registration
-      const response = await axios.post('http://localhost:5000/api/register', registrationData);
+      const response = await axios.post('https://task4-server-rho.vercel.app/api/register', registrationData);
 
       setSuccessMessage('Registration successful! You can now log in.');
       setErrorMessage(''); // Clear any previous error message
@@ -76,7 +76,7 @@ const Register = ({ togglePage }) => {
         {errorMessage && <p className="text-danger">{errorMessage}</p>} {/* Display error message */}
         {successMessage && <p className="text-success">{successMessage}</p>} {/* Display success message */}
         <p className="text-center mt-3">
-          Already have an account? <span className="text-primary" style={{ cursor: 'pointer' }} onClick={togglePage}>Login</span>
+          Already have an account? <span className="text-primary" style={{ cursor: 'pointer' }} onClick={()=>{navigate('/login')}}>Login</span>
         </p>
       </form>
     </div>

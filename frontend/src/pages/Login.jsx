@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-const Login = ({ togglePage }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -19,7 +19,7 @@ const Login = ({ togglePage }) => {
 
     try {
       // Make the API call to the backend
-      const response = await axios.post('http://localhost:5000/api/login', payload);
+      const response = await axios.post('https://task4-server-rho.vercel.app/api/login', payload);
 
       // response contains a token
       const { token } = response.data;
@@ -66,7 +66,7 @@ const Login = ({ togglePage }) => {
         <button type="submit" className="btn btn-primary w-100">Login</button>
         {errorMessage && <p>{errorMessage}</p>} {/* Display error message if any */}
         <p className="text-center mt-3">
-          Don't have an account? <span className="text-primary" style={{ cursor: 'pointer' }} onClick={togglePage}>Register</span>
+          Don't have an account? <span className="text-primary" style={{ cursor: 'pointer' }} onClick={()=>{navigate('/register')}}>Register</span>
         </p>
       </form>
     </div>
