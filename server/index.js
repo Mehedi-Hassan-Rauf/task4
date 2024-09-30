@@ -15,7 +15,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://task4-git-master-raufs-projects-88329df5.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   },));
