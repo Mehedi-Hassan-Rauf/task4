@@ -12,7 +12,7 @@ const AdminPanel = () => {
 
   const fetchUsers = () => {
     axios.get(`http://localhost:5000/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
-      .then(res => setUsers(res.data))
+      .then(res => {setUsers(res.data);console.log(res)})
       .catch(err => console.log(err));
   };
 

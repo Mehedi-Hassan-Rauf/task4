@@ -11,13 +11,7 @@ const path = require("path");
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
-const dirname = path.resolve();
 
-app.use(express.static(path.join(dirname, "/frontend/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(dirname, "frontend", "dist", "index.html"));
-});
 
 // Middleware
 app.use(cors({
