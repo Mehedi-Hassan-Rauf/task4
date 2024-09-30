@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -12,26 +12,28 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-// Use CORS middleware before your routes
 app.use(cors());
-
 app.use(bodyParser.json());
 
-// Database Connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root', // Use your MySQL username
-    password: 'R0a0u0f0@', // Use your MySQL password
-    database: 'user_management'
-});
-
-db.connect((err) => {
-    if (err) throw err;
-    console.log('MySQL connected...');
-});
+// MongoDB Connection
+mongoose.connect(`mongodb+srv://root:0nY6eLRokTwa6Hes@cluster0.7g8ue.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+    .then(() => console.log('MongoDB connected...'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // JWT Secret Key
 const JWT_SECRET = 'my_secret_key';
+
+// User Schema
+const userSchema = new mongoose.Schema({
+    name: String,
+    email: { type: String, unique: true },
+    password: String,
+    status: { type: String, default: 'active' },
+    registration_time: { type: Date, default: Date.now },
+    last_login_time: Date
+});
+
+const User = mongoose.model('User', userSchema);
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -51,109 +53,96 @@ app.get('/', (req, res) => {
 });
 
 // Register Route
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { name, email, password } = req.body;
-    bcrypt.hash(password, 10, (err, hash) => {
-        if (err) throw err;
-        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        db.query(sql, [name, email, hash], (err, result) => {
-            if (err) return res.status(400).json({ error: err });
-            res.status(201).json({ message: 'User registered successfully' });
-        });
-    });
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hash });
+        await newUser.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        return res.status(400).json({ error: err.message });
+    }
 });
 
 // Login Route
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
-    // Fetch user from database
-    const sqlSelect = 'SELECT * FROM users WHERE email = ?';
-    db.query(sqlSelect, [email], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        if (results.length === 0) {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
             return res.status(400).json({ error: 'Invalid email or password' });
         }
-
-        const user = results[0];
 
         // Check if account is blocked
         if (user.status === 'blocked') {
             return res.status(403).json({ error: 'Account is blocked' });
         }
 
-        // Compare passwords
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err || !isMatch) {
-                return res.status(400).json({ error: 'Invalid email or password' });
-            }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
 
-            // Update last login time
-            const sqlUpdate = 'UPDATE users SET last_login_time = NOW() WHERE id = ?';
-            db.query(sqlUpdate, [user.id], (err) => {
-                if (err) {
-                    return res.status(500).json({ error: 'Error updating last login time' });
-                }
+        // Update last login time
+        user.last_login_time = new Date();
+        await user.save();
 
-                // Generate token and send response
-                const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
-                res.json({ token });
-            });
-        });
-    });
+        // Generate token and send response
+        const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token });
+    } catch (err) {
+        return res.status(500).json({ error: 'Database error' });
+    }
 });
 
 // Fetch Users Route (admin only)
-app.get('/api/users', authenticateToken, (req, res) => {
-    const sql = 'SELECT id, name, email, status, registration_time, last_login_time FROM users';
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-        res.json(results);
-    });
+app.get('/api/users', authenticateToken, async (req, res) => {
+    try {
+        const users = await User.find({}, 'id name email status registration_time last_login_time');
+        res.json(users);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 // Block User Route
-app.put('/api/block/:id', authenticateToken, (req, res) => {
+app.put('/api/block/:id', authenticateToken, async (req, res) => {
     const { id } = req.params; // Extract user ID from URL parameters
-    const sql = 'UPDATE users SET status = "blocked" WHERE id = ?'; // SQL query to update user status
 
-    db.query(sql, [id], (err, result) => {
-        // Error handling
-        if (err) {
-            console.error('Error executing query', err); // Log the error for debugging
-            return res.status(500).json({ error: 'Database query failed' });
-        }
-
-        // Check if any rows were affected
-        if (result.affectedRows === 0) {
+    try {
+        const result = await User.updateOne({ _id: id }, { status: 'blocked' });
+        if (result.nModified === 0) {
             return res.status(404).json({ error: 'User not found or already blocked' });
         }
-
-        res.json({ message: 'User blocked successfully' }); // Send success response
-    });
+        res.json({ message: 'User blocked successfully' });
+    } catch (err) {
+        console.error('Error executing query', err); // Log the error for debugging
+        return res.status(500).json({ error: 'Database query failed' });
+    }
 });
 
 // Unblock User Route
-app.put('/api/unblock/:id', authenticateToken, (req, res) => {
+app.put('/api/unblock/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const sql = 'UPDATE users SET status = "active" WHERE id = ?';
-    db.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err });
+    try {
+        await User.updateOne({ _id: id }, { status: 'active' });
         res.json({ message: 'User unblocked' });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 // Delete User Route
-app.delete('/api/delete/:id', authenticateToken, (req, res) => {
+app.delete('/api/delete/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const sql = 'DELETE FROM users WHERE id = ?';
-    db.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err });
+    try {
+        await User.deleteOne({ _id: id });
         res.json({ message: 'User deleted' });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 // Start Server
