@@ -20,7 +20,6 @@ app.use(cors({
     credentials: true, 
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
-app.options('*', cors());
 app.use(bodyParser.json());
 
 // Database Connection
@@ -51,6 +50,10 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+app.get('/api', (req, res) => {
+  res.json({ message: 'Hello World' });
+});
 
 // Register Route
 app.post('/api/register', (req, res) => {
