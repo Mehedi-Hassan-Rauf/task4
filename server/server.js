@@ -14,12 +14,16 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 // Use CORS middleware before your routes
-app.use(cors({
-    origin: "https://task4-nu-ashy.vercel.app", // Adjust this to your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    credentials: true, // Set to true if you need to include cookies or authorization headers
-    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+// app.use(cors({
+//     origin: "https://task4-nu-ashy.vercel.app", // Adjust this to your frontend URL
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//     credentials: true, // Set to true if you need to include cookies or authorization headers
+//     allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+// }));
 
 app.use(bodyParser.json());
 
