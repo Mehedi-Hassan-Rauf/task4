@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB Connection
-mongoose.connect(`mongodb+srv://root:0nY6eLRokTwa6Hes@cluster0.7g8ue.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+mongoose.connect(`mongodb+srv://root:rvj7MXlmGHUJTfxb@cluster0.4gzld.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
     .then(() => console.log('MongoDB connected...'))
     .catch(err => console.error('MongoDB connection error:', err));
 
