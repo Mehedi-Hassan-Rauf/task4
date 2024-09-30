@@ -57,6 +57,7 @@ const AdminPanel = () => {
   };
 
   const handleSelectUser = (userId) => {
+    console.log(userId)
     if (selectedUsers.includes(userId)) {
       setSelectedUsers(selectedUsers.filter(id => id !== userId));
     } else {
@@ -104,17 +105,17 @@ const AdminPanel = () => {
             </tr>
           </thead>
           <tbody>
-            {users?.map(user => (
-              <tr key={user.id}>
+            {users?.map((user,index) => (
+              <tr key={user._id}>
                 <td>
                   <input
                     type="checkbox"
                     className="form-check-input"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={() => handleSelectUser(user.id)}
+                    checked={selectedUsers.includes(user._id)}
+                    onChange={() => handleSelectUser(user._id)}
                   />
                 </td>
-                <td>{user.id}</td>
+                <td>{index+1}</td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.last_login_time}</td>
