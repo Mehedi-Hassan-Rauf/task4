@@ -18,7 +18,7 @@ app.use(cors({
     origin: "https://task4-nu-ashy.vercel.app", // Adjust this to your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true, // Set to true if you need to include cookies or authorization headers
-    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+    allowedHeaders: ["Origin","Content-Type","Accept","Authorization","X-Request-With",], 
 }));
 
 app.use(bodyParser.json());
